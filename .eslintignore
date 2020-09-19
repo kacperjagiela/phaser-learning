@@ -1,0 +1,6 @@
+package.json
+package-lock.json
+build
+node_modules/**
+src/react-app-env.d.ts
+src/serviceWorker.ts
