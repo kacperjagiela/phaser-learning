@@ -8,21 +8,33 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class GameScene extends Phaser.Scene {
     private square: Phaser.GameObjects.Rectangle & { body: Phaser.Physics.Arcade.Body };
-    private obstacles: Phaser.Physics.Arcade.StaticGroup;
-    private platform: Phaser.GameObjects.Rectangle & { body: Phaser.Physics.Arcade.Body };
+    private coins: Phaser.Physics.Arcade.StaticGroup;
+    private scoreText: Phaser.GameObjects.Text;
+    private score: number = 0;
 
     constructor() {
         super(sceneConfig);
     }
 
+    public collectCoin(player, coin) {
+        coin.destroy();
+
+        this.score += 100;
+        this.scoreText.setText('Score: ' + this.score);
+    }
+
     public create() {
         this.square = this.add.rectangle(400, 400, 100, 100, 0xffffff) as any;
-        this.platform = this.add.rectangle(600, 600, 40, 200, 0xfa3543) as any;
-        this.obstacles = this.physics.add.staticGroup();
+        this.coins = this.physics.add.staticGroup();
+        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: 'red' });
 
-        this.obstacles.add(this.platform);
+        // Generate coins
+        for (let i = 1; i <= 5; i++) {
+            this.coins.add(this.add.circle(i * 100, i * 50, 50, 0x345345));
+        }
+
         this.physics.add.existing(this.square);
-        this.physics.add.collider(this.square, this.obstacles);
+        this.physics.add.overlap(this.square, this.coins, this.collectCoin, null, this);
     }
 
     public update() {
